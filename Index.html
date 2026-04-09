@@ -3,1466 +3,569 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manglish Typing - Malayalam Transliteration</title>
+    <title>Manglish Pro | Smart Notes</title>
     
-    <!-- Google Fonts: Arima for Malayalam and Poppins for English -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Arima:wght@400;700&family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Bootstrap CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Arima:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --primary-color: #8b5cf6;
-            --secondary-color: #06b6d4;
-            --accent-color: #ec4899;
-            --dark-bg: #0d1117;
-            --card-bg: #1a1f2e;
-            --input-bg: #161b22;
-            --border-color: #30363d;
-            --text-primary: #e6edf3;
-            --text-secondary: #8b949e;
-            --success-color: #238636;
-            --danger-color: #f85149;
-            --warning-color: #d29922;
+            --primary: #6c63ff;
+            --primary-hover: #5a52d5;
+            --bg-color: #f8f9fa;
+            --sidebar-bg: #ffffff;
+            --editor-bg: #ffffff;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --border-color: #e9ecef;
+            --danger: #ff7675;
+            --sidebar-width: 320px;
         }
-        
-        * {
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            height: 100vh;
+            overflow: hidden; /* Prevent body scroll, let panels scroll */
         }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1625 100%);
-            color: var(--text-primary);
-            min-height: 100vh;
+
+        .app-container {
             display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow-x: hidden;
+            height: 100vh;
+            width: 100vw;
         }
-        
-        /* Animated background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        .wrapper {
-            display: flex;
-            flex: 1;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* Sidebar Styles */
+
+        /* --- Sidebar Styles --- */
         .sidebar {
-            width: 280px;
-            background: rgba(26, 31, 46, 0.8);
-            backdrop-filter: blur(10px);
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            max-height: 100vh;
-            overflow-y: auto;
             transition: transform 0.3s ease;
+            z-index: 100;
         }
-        
+
         .sidebar-header {
-            padding: 1.5rem 1rem;
+            padding: 20px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
-            align-items: center;
             justify-content: space-between;
-        }
-        
-        .sidebar-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            display: flex;
             align-items: center;
-            gap: 0.5rem;
         }
-        
-        .sidebar-title i {
-            color: var(--primary-color);
+
+        .brand {
+            font-family: 'Arima', cursive;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin: 0;
         }
-        
-        .new-file-btn {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+
+        .btn-new-note {
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
-            gap: 0.4rem;
-            width: 100%;
-            margin: 1rem;
             justify-content: center;
+            transition: background 0.2s;
         }
-        
-        .new-file-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
-        }
-        
-        .files-list {
+
+        .btn-new-note:hover { background: var(--primary-hover); color: white; }
+
+        .notes-list {
             flex: 1;
             overflow-y: auto;
-            padding: 0.5rem;
+            padding: 10px;
         }
-        
-        .file-item {
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            background-color: rgba(139, 92, 246, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+
+        .note-item {
+            padding: 15px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 0.5rem;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            position: relative;
+            background: #fff;
         }
-        
-        .file-item:hover {
-            background-color: rgba(139, 92, 246, 0.15);
-            border-color: var(--primary-color);
+
+        .note-item:hover {
+            background: var(--bg-color);
         }
-        
-        .file-item.active {
-            background-color: rgba(139, 92, 246, 0.25);
-            border-color: var(--primary-color);
-            box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+
+        .note-item.active {
+            background: rgba(108, 99, 255, 0.08);
+            border-color: rgba(108, 99, 255, 0.2);
         }
-        
-        .file-name {
-            flex: 1;
+
+        .note-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-size: 0.9rem;
-            color: var(--text-primary);
+            padding-right: 24px; /* Space for delete button */
+            font-family: 'Arima', 'Inter', sans-serif;
         }
-        
-        .file-actions {
-            display: flex;
-            gap: 0.3rem;
-        }
-        
-        .file-action-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 0.3rem 0.5rem;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-            font-size: 0.85rem;
-        }
-        
-        .file-action-btn:hover {
-            color: var(--primary-color);
-            background: rgba(139, 92, 246, 0.1);
-        }
-        
-        .file-action-btn.delete:hover {
-            color: var(--danger-color);
-            background: rgba(248, 81, 73, 0.1);
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 2rem 1rem;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        
-        .sidebar-footer {
-            border-top: 1px solid var(--border-color);
-            padding: 1rem;
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .sidebar-footer-btn {
-            flex: 1;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 0.5rem;
-            border-radius: 6px;
-            cursor: pointer;
+
+        .note-preview {
             font-size: 0.8rem;
-            transition: all 0.2s ease;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        
-        .sidebar-footer-btn:hover {
-            background: rgba(139, 92, 246, 0.1);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
+
+        .note-date {
+            font-size: 0.7rem;
+            color: #b2bec3;
+            margin-top: 6px;
         }
-        
-        /* Main Content */
+
+        .btn-delete {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            padding: 0;
+            opacity: 0;
+            transition: opacity 0.2s, color 0.2s;
+        }
+
+        .note-item:hover .btn-delete { opacity: 1; }
+        .btn-delete:hover { color: var(--danger); }
+
+        /* --- Main Editor Styles --- */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 2rem;
-            overflow-y: auto;
+            background: var(--editor-bg);
+            height: 100vh;
         }
-        
-        .app-container {
+
+        .editor-toolbar {
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-main);
+            padding: 0 10px 0 0;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-tool {
+            background: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-tool:hover { background: #e2e6ea; }
+        .btn-tool i { margin-right: 6px; }
+
+        .editor-workspace {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            padding: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
         }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-            animation: slideDown 0.8s ease-out;
-        }
-        
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .malayalam-title {
-            font-family: 'Arima', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        }
-        
-        .english-subtitle {
-            font-size: 1.2rem;
-            font-weight: 300;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-            letter-spacing: 2px;
-        }
-        
-        .typing-card {
-            background: rgba(26, 31, 46, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color);
-            border-radius: 15px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
-            animation: fadeInUp 0.8s ease-out 0.2s both;
-            position: relative;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .typing-card:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
-        }
-        
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
+
+        .save-status {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            justify-content: space-between;
+            gap: 6px;
         }
-        
-        .card-title i {
-            color: var(--primary-color);
-        }
-        
-        .file-info {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
+
+        /* Suggestion Bar */
+        .suggestion-bar {
             display: flex;
-            gap: 1rem;
-            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            min-height: 36px;
+            overflow-x: auto;
+            scrollbar-width: none;
         }
-        
-        .file-info-item {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-        
-        .typing-area-container {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-label {
-            font-weight: 500;
-            margin-bottom: 0.75rem;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-        }
-        
-        .form-control {
-            background-color: var(--input-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-            font-size: 1.1rem;
-            font-family: 'Arima', sans-serif;
-            color: var(--text-primary);
-            min-height: 300px;
-            resize: vertical;
-            transition: all 0.3s ease;
-        }
-        
-        .form-control::placeholder {
-            color: var(--text-secondary);
-            opacity: 0.5;
-        }
-        
-        .form-control:focus {
-            background-color: var(--input-bg);
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1), inset 0 0 10px rgba(139, 92, 246, 0.05);
-            color: var(--text-primary);
-        }
-        
-        /* Word Suggestions */
-        .word-suggestions {
-            position: absolute;
-            bottom: -140px;
-            left: 0;
-            right: 0;
-            background: rgba(26, 31, 46, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            max-height: 130px;
-            overflow-y: auto;
-            z-index: 1000;
-            display: none;
-            padding: 0.5rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        }
-        
-        .word-suggestions.show {
-            display: block;
-            animation: slideUp 0.2s ease-out;
-        }
-        
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .word-suggestion-item {
-            padding: 0.75rem;
-            margin-bottom: 0.3rem;
-            background-color: rgba(139, 92, 246, 0.1);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+        .suggestion-bar::-webkit-scrollbar { display: none; }
+
+        .suggestion-chip {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.2s ease;
             font-family: 'Arima', sans-serif;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .word-suggestion-item:hover {
-            background-color: rgba(139, 92, 246, 0.25);
-            border-color: var(--primary-color);
-            transform: translateX(5px);
-        }
-        
-        .suggestion-label {
-            font-size: 0.75rem;
-            color: var(--secondary-color);
-            margin-left: auto;
-            font-weight: 600;
-        }
-        
-        .typing-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            border-radius: 10px;
-            padding: 0.6rem 1.2rem;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
             font-size: 0.95rem;
+            white-space: nowrap;
+            transition: all 0.2s;
         }
-        
-        .btn-copy {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-        }
-        
-        .btn-copy:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
-        }
-        
-        .btn-clear {
-            background-color: rgba(248, 81, 73, 0.1);
-            color: var(--danger-color);
-            border: 1px solid var(--danger-color);
-        }
-        
-        .btn-clear:hover {
-            background-color: rgba(248, 81, 73, 0.2);
-        }
-        
-        .btn-save {
-            background-color: rgba(35, 134, 54, 0.1);
-            color: var(--success-color);
-            border: 1px solid var(--success-color);
-        }
-        
-        .btn-save:hover {
-            background-color: rgba(35, 134, 54, 0.2);
-        }
-        
-        .stats-section {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .stat-item {
+
+        .suggestion-chip:hover { background: var(--primary); color: white; }
+
+        /* Textarea */
+        .main-textarea {
             flex: 1;
-            min-width: 100px;
-            background-color: rgba(139, 92, 246, 0.1);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 0.8rem;
-            text-align: center;
-            transition: all 0.3s ease;
+            width: 100%;
+            border: none;
+            resize: none;
+            font-size: 1.3rem;
+            font-family: 'Arima', 'Inter', sans-serif;
+            line-height: 1.8;
+            color: var(--text-main);
+            outline: none;
+            padding: 0;
+            background: transparent;
         }
-        
-        .stat-item:hover {
-            background-color: rgba(139, 92, 246, 0.15);
-            border-color: var(--primary-color);
+
+        .main-textarea::placeholder {
+            color: #b2bec3;
+            font-family: 'Inter', sans-serif;
         }
-        
-        .stat-value {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 0.25rem;
-        }
-        
-        .stat-label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .status {
-            height: auto;
-            min-height: 24px;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem;
-            background-color: rgba(139, 92, 246, 0.1);
-            border-radius: 8px;
-            border-left: 3px solid var(--primary-color);
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-10px);
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                height: 100%;
+                box-shadow: 5px 0 25px rgba(0,0,0,0.1);
+                transform: translateX(-100%);
             }
-            to {
-                opacity: 1;
+            .sidebar.open {
                 transform: translateX(0);
             }
-        }
-        
-        .status.hidden {
-            display: none;
-        }
-        
-        .status.success {
-            background-color: rgba(35, 134, 54, 0.1);
-            border-left-color: var(--success-color);
-            color: var(--success-color);
-        }
-        
-        .status.error {
-            background-color: rgba(248, 81, 73, 0.1);
-            border-left-color: var(--danger-color);
-            color: var(--danger-color);
-        }
-        
-        .footer {
-            background-color: rgba(13, 17, 23, 0.8);
-            border-top: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 1.5rem 2rem;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-        
-        .footer-brand i {
-            color: var(--accent-color);
-            margin: 0 0.3rem;
-        }
-        
-        .typing-keyboard {
-            position: absolute;
-            bottom: 15px;
-            right: 20px;
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            opacity: 0.6;
-            pointer-events: none;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-        
-        /* Modal Styles */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            animation: fadeIn 0.2s ease-out;
-        }
-        
-        .modal-overlay.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .modal-content {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 15px;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            animation: slideUp 0.3s ease-out;
-        }
-        
-        .modal-header {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .modal-input {
-            width: 100%;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 0.75rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        .modal-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-        }
-        
-        .modal-actions button {
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .modal-cancel {
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--text-primary);
-        }
-        
-        .modal-cancel:hover {
-            background: rgba(139, 92, 246, 0.2);
-        }
-        
-        .modal-confirm {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-        }
-        
-        .modal-confirm:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
-        }
-        
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: var(--input-bg);
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--secondary-color);
-        }
-        
-        /* Responsive Design */
-        .sidebar-toggle {
-            display: none;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-size: 1.3rem;
-            cursor: pointer;
-            margin-right: 1rem;
-        }
-        
-        @media (max-width: 768px) {
-            .wrapper {
-                flex-direction: column;
-            }
-            
-            .sidebar {
-                width: 100%;
-                max-height: 40vh;
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-                order: -1;
-            }
-            
-            .main-content {
-                padding: 1.5rem 1rem;
-            }
-            
-            .header {
-                margin-bottom: 1.5rem;
-            }
-            
-            .malayalam-title {
-                font-size: 2rem;
-            }
-            
-            .english-subtitle {
-                font-size: 1rem;
-            }
-            
-            .typing-card {
-                padding: 1.5rem;
-            }
-            
-            .form-control {
-                font-size: 1rem;
-                min-height: 200px;
-                padding: 1rem;
-            }
-            
-            .word-suggestions {
-                bottom: -160px;
-                max-height: 150px;
-            }
-            
-            .typing-actions {
-                flex-direction: column;
-                gap: 0.8rem;
-            }
-            
-            .typing-actions .btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .stats-section {
-                flex-direction: column;
-            }
-            
-            .stat-item {
-                min-width: 100%;
-            }
-            
-            .modal-content {
-                width: 95%;
-            }
+            .mobile-toggle { display: block; }
+            .editor-toolbar { padding: 15px; }
+            .editor-workspace { padding: 20px 15px; }
         }
     </style>
 </head>
 <body>
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-title">
-                    <i class="fas fa-file-alt"></i>
-                    <span>My Documents</span>
-                </div>
-            </div>
-            
-            <button class="new-file-btn" onclick="openNewFileModal()">
-                <i class="fas fa-plus"></i> New File
-            </button>
-            
-            <div class="files-list" id="files-list">
-                <div class="empty-state">
-                    <i class="fas fa-inbox"></i>
-                    <p>No files yet. Create your first file!</p>
-                </div>
-            </div>
-            
-            <div class="sidebar-footer">
-                <button class="sidebar-footer-btn" onclick="exportAllFiles()" title="Export all files">
-                    <i class="fas fa-download"></i> Export
-                </button>
-                <button class="sidebar-footer-btn" onclick="clearAllFiles()" title="Clear all files">
-                    <i class="fas fa-trash"></i> Clear
-                </button>
-            </div>
-        </div>
-        
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="app-container">
-                <div class="header">
-                    <h1 class="malayalam-title">മംഗ്ലീഷ് ടൈപ്പിങ്ങ്</h1>
-                    <h2 class="english-subtitle">Manglish Typing Tool</h2>
-                </div>
-                
-                <div class="typing-card">
-                    <div class="card-title">
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <i class="fas fa-terminal"></i>Transliteration Terminal
-                        </div>
-                        <div class="file-info">
-                            <div class="file-info-item">
-                                <i class="fas fa-floppy-disk"></i>
-                                <span id="current-file">Untitled</span>
-                            </div>
-                            <div class="file-info-item">
-                                <i class="fas fa-clock"></i>
-                                <span id="last-saved">Now</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="typing-area-container">
-                        <label for="manglish-input" class="form-label">
-                            <i class="fas fa-keyboard"></i> Type Manglish Text
-                        </label>
-                        <textarea 
-                            id="manglish-input" 
-                            class="form-control" 
-                            placeholder="namaskaram... (Start typing in Manglish)"
-                        ></textarea>
-                        <div class="typing-keyboard">
-                            <i class="fas fa-keyboard"></i>
-                        </div>
-                        <div class="word-suggestions" id="word-suggestions"></div>
-                    </div>
-                    
-                    <div class="stats-section">
-                        <div class="stat-item">
-                            <div class="stat-value" id="char-count">0</div>
-                            <div class="stat-label">Characters</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="word-count">0</div>
-                            <div class="stat-label">Words</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="line-count">0</div>
-                            <div class="stat-label">Lines</div>
-                        </div>
-                    </div>
-                    
-                    <div class="typing-actions">
-                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                            <button id="clear-btn" class="btn btn-clear" title="Clear all text">
-                                <i class="fas fa-trash"></i> Clear
-                            </button>
-                            <button id="save-btn" class="btn btn-save" title="Save file">
-                                <i class="fas fa-save"></i> Save
-                            </button>
-                            <button id="copy-btn" class="btn btn-copy" title="Copy to clipboard">
-                                <i class="fas fa-copy"></i> Copy
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div id="status" class="status hidden"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <footer class="footer">
-        <div>Made with <i class="fas fa-heart"></i> by <strong>NajahCreates</strong> • <a href="https://github.com/najahcreates/manglish" target="_blank" style="color: var(--primary-color); text-decoration: none;">GitHub</a></div>
-    </footer>
-    
-    <!-- New File Modal -->
-    <div class="modal-overlay" id="new-file-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <i class="fas fa-file-plus"></i>
-                <span>Create New File</span>
-            </div>
-            <input 
-                type="text" 
-                class="modal-input" 
-                id="new-file-name" 
-                placeholder="Enter file name..."
-                onkeypress="if(event.key==='Enter') confirmNewFile()"
-            >
-            <div class="modal-actions">
-                <button class="modal-cancel" onclick="closeModal('new-file-modal')">Cancel</button>
-                <button class="modal-confirm" onclick="confirmNewFile()">Create</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Rename File Modal -->
-    <div class="modal-overlay" id="rename-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <i class="fas fa-edit"></i>
-                <span>Rename File</span>
-            </div>
-            <input 
-                type="text" 
-                class="modal-input" 
-                id="rename-input" 
-                placeholder="Enter new name..."
-                onkeypress="if(event.key==='Enter') confirmRename()"
-            >
-            <div class="modal-actions">
-                <button class="modal-cancel" onclick="closeModal('rename-modal')">Cancel</button>
-                <button class="modal-confirm" onclick="confirmRename()">Rename</button>
-            </div>
-        </div>
-    </div>
 
-    <script>
-        // File Management System
-        class FileManager {
-            constructor() {
-                this.files = [];
-                this.currentFileId = null;
-                this.loadFiles();
-            }
-            
-            generateId() {
-                return Date.now().toString(36) + Math.random().toString(36).substr(2);
-            }
-            
-            createFile(name) {
-                const file = {
-                    id: this.generateId(),
-                    name: name || 'Untitled',
-                    content: '',
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
-                };
-                this.files.push(file);
-                this.saveFiles();
-                return file;
-            }
-            
-            updateFile(id, content) {
-                const file = this.files.find(f => f.id === id);
-                if (file) {
-                    file.content = content;
-                    file.updatedAt = new Date().toISOString();
-                    this.saveFiles();
-                }
-            }
-            
-            renameFile(id, newName) {
-                const file = this.files.find(f => f.id === id);
-                if (file) {
-                    file.name = newName || 'Untitled';
-                    file.updatedAt = new Date().toISOString();
-                    this.saveFiles();
-                    return true;
-                }
-                return false;
-            }
-            
-            deleteFile(id) {
-                const index = this.files.findIndex(f => f.id === id);
-                if (index > -1) {
-                    this.files.splice(index, 1);
-                    this.saveFiles();
-                    if (this.currentFileId === id) {
-                        this.currentFileId = this.files.length > 0 ? this.files[0].id : null;
-                    }
-                    return true;
-                }
-                return false;
-            }
-            
-            getFile(id) {
-                return this.files.find(f => f.id === id);
-            }
-            
-            saveFiles() {
-                localStorage.setItem('manglish-files', JSON.stringify(this.files));
-            }
-            
-            loadFiles() {
-                const saved = localStorage.getItem('manglish-files');
-                this.files = saved ? JSON.parse(saved) : [];
-                if (this.files.length > 0 && !this.currentFileId) {
-                    this.currentFileId = this.files[0].id;
-                }
-            }
-            
-            clearAll() {
-                this.files = [];
-                this.currentFileId = null;
-                this.saveFiles();
-            }
-            
-            exportAll() {
-                const dataStr = JSON.stringify(this.files, null, 2);
-                const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(dataBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `manglish-backup-${new Date().toISOString().split('T')[0]}.json`;
-                link.click();
-                URL.revokeObjectURL(url);
-            }
+<div class="app-container">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1 class="brand">മംഗ്ലീഷ് Pro</h1>
+            <button class="btn-new-note" onclick="createNewNote()" title="New Note">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+        <div class="notes-list" id="notes-list">
+            </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="editor-toolbar">
+            <div class="d-flex align-items-center">
+                <button class="mobile-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <div class="save-status" id="save-status">
+                    <i class="fas fa-check-circle text-success" style="display:none;" id="status-icon"></i>
+                    <span id="status-text">All changes saved</span>
+                </div>
+            </div>
+            <div class="toolbar-actions">
+                <button class="btn-tool" onclick="copyText()"><i class="fas fa-copy"></i> Copy</button>
+                <button class="btn-tool" onclick="downloadTxt()"><i class="fas fa-download"></i> Save .txt</button>
+            </div>
+        </header>
+
+        <div class="editor-workspace">
+            <div id="suggestion-container" class="suggestion-bar"></div>
+            <textarea 
+                id="editor" 
+                class="main-textarea" 
+                placeholder="Start typing your thoughts here... (Press space to convert to Malayalam)"
+            ></textarea>
+        </div>
+    </main>
+</div>
+
+<script>
+    // --- State Management ---
+    let notes = JSON.parse(localStorage.getItem('manglish_notes')) || [];
+    let activeNoteId = null;
+    let saveTimeout = null;
+
+    // DOM Elements
+    const editor = document.getElementById('editor');
+    const notesListEl = document.getElementById('notes-list');
+    const suggContainer = document.getElementById('suggestion-container');
+    const statusText = document.getElementById('status-text');
+    const statusIcon = document.getElementById('status-icon');
+    const sidebar = document.getElementById('sidebar');
+
+    // --- Initialization ---
+    function init() {
+        if (notes.length === 0) {
+            createNewNote();
+        } else {
+            // Sort by latest updated
+            notes.sort((a, b) => b.updatedAt - a.updatedAt);
+            activeNoteId = notes[0].id;
+            loadActiveNote();
+            renderNotesList();
         }
+    }
+
+    // --- CRUD Operations ---
+    function createNewNote() {
+        const newNote = {
+            id: Date.now().toString(),
+            content: '',
+            updatedAt: Date.now()
+        };
+        notes.unshift(newNote); // Add to top
+        activeNoteId = newNote.id;
+        saveToLocalStorage();
+        loadActiveNote();
+        renderNotesList();
+        editor.focus();
         
-        // Initialize File Manager
-        const fileManager = new FileManager();
-        
-        // DOM Elements
-        const textarea = document.getElementById('manglish-input');
-        const status = document.getElementById('status');
-        const clearBtn = document.getElementById('clear-btn');
-        const copyBtn = document.getElementById('copy-btn');
-        const saveBtn = document.getElementById('save-btn');
-        const charCount = document.getElementById('char-count');
-        const wordCount = document.getElementById('word-count');
-        const lineCount = document.getElementById('line-count');
-        const currentFileSpan = document.getElementById('current-file');
-        const lastSavedSpan = document.getElementById('last-saved');
-        const filesList = document.getElementById('files-list');
-        const wordSuggestions = document.getElementById('word-suggestions');
-        const newFileNameInput = document.getElementById('new-file-name');
-        const renameInput = document.getElementById('rename-input');
-        
-        let lastWord = '';
-        let cursorPos = 0;
-        let renameFileId = null;
-        
-        // Update Stats
-        function updateStats() {
-            const text = textarea.value;
-            charCount.textContent = text.length;
-            wordCount.textContent = text.trim() ? text.trim().split(/\s+/).length : 0;
-            lineCount.textContent = text ? text.split('\n').length : 0;
+        if(window.innerWidth <= 768) toggleSidebar(); // Close sidebar on mobile
+    }
+
+    function loadActiveNote() {
+        const note = notes.find(n => n.id === activeNoteId);
+        if (note) {
+            editor.value = note.content;
+            suggContainer.innerHTML = '';
+            showStatus('All changes saved', 'check-circle', 'text-success');
         }
-        
-        // Show Status Message
-        function showStatus(message, type = 'info') {
-            status.textContent = message;
-            status.className = 'status ' + type;
-            status.classList.remove('hidden');
+    }
+
+    function deleteNote(id, event) {
+        event.stopPropagation(); // Prevent opening the note when clicking delete
+        if(confirm("Are you sure you want to delete this note?")) {
+            notes = notes.filter(n => n.id !== id);
+            saveToLocalStorage();
             
-            if (type !== 'error') {
-                setTimeout(() => {
-                    status.classList.add('hidden');
-                }, 2000);
+            if (notes.length === 0) {
+                createNewNote();
+            } else if (activeNoteId === id) {
+                activeNoteId = notes[0].id;
+                loadActiveNote();
             }
+            renderNotesList();
         }
+    }
+
+    // --- Auto-Save Logic ---
+    editor.addEventListener('input', () => {
+        showStatus('Saving...', 'spinner fa-spin', 'text-secondary');
         
-        // Get Current Word
-        function getCurrentWord() {
-            const text = textarea.value;
-            const start = textarea.selectionStart;
-            let wordStart = start;
-            let wordEnd = start;
-            
-            while (wordStart > 0 && /\w/.test(text[wordStart - 1])) {
-                wordStart--;
+        // Debounce saving to prevent performance hits
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+            const note = notes.find(n => n.id === activeNoteId);
+            if (note) {
+                note.content = editor.value;
+                note.updatedAt = Date.now();
+                // Move updated note to top
+                notes = [note, ...notes.filter(n => n.id !== activeNoteId)];
+                saveToLocalStorage();
+                renderNotesList();
+                showStatus('Saved', 'check-circle', 'text-success');
             }
+        }, 1000); // Save 1 second after typing stops
+    });
+
+    function saveToLocalStorage() {
+        localStorage.setItem('manglish_notes', JSON.stringify(notes));
+    }
+
+    // --- UI Rendering ---
+    function renderNotesList() {
+        notesListEl.innerHTML = '';
+        notes.forEach(note => {
+            // Extract Title from content (first 3 words or 25 chars)
+            let title = note.content.trim() ? note.content.trim().split('\n')[0].substring(0, 30) : 'New Note';
+            let preview = note.content.trim().substring(0, 50).replace(/\n/g, ' ');
             
-            while (wordEnd < text.length && /\w/.test(text[wordEnd])) {
-                wordEnd++;
-            }
-            
-            return {
-                word: text.substring(wordStart, wordEnd),
-                start: wordStart,
-                end: wordEnd
+            // Format Date
+            const dateObj = new Date(note.updatedAt);
+            const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+            const noteEl = document.createElement('div');
+            noteEl.className = `note-item ${note.id === activeNoteId ? 'active' : ''}`;
+            noteEl.onclick = () => {
+                activeNoteId = note.id;
+                loadActiveNote();
+                renderNotesList();
+                if(window.innerWidth <= 768) toggleSidebar();
             };
+
+            noteEl.innerHTML = `
+                <div class="note-title">${title}</div>
+                <div class="note-preview">${preview || 'Empty...'}</div>
+                <div class="note-date">${dateStr}</div>
+                <button class="btn-delete" onclick="deleteNote('${note.id}', event)" title="Delete Note">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            notesListEl.appendChild(noteEl);
+        });
+    }
+
+    function showStatus(text, iconClass, colorClass) {
+        statusText.innerText = text;
+        statusIcon.className = `fas fa-${iconClass} ${colorClass}`;
+        statusIcon.style.display = 'inline-block';
+    }
+
+    function toggleSidebar() {
+        sidebar.classList.toggle('open');
+    }
+
+    // --- Core Transliteration Engine (Retained & Optimized) ---
+    async function fetchTransliteration(text) {
+        if (!text.trim()) return [];
+        try {
+            const url = `https://inputtools.google.com/request?text=${encodeURIComponent(text)}&itc=ml-t-i0-und&num=6&cp=0&cs=1&ie=utf-8&oe=utf-8`;
+            const res = await fetch(url);
+            const data = await res.json();
+            return data[0] === "SUCCESS" ? data[1][0][1] : [];
+        } catch (e) {
+            console.error(e);
+            return [];
         }
-        
-        // Show Word Suggestions
-        async function showWordSuggestions() {
-            const currentWord = getCurrentWord();
-            lastWord = currentWord.word;
+    }
+
+    async function processTransliteration() {
+        const text = editor.value;
+        const cursorPos = editor.selectionStart;
+        const textBeforeCursor = text.substring(0, cursorPos);
+        const words = textBeforeCursor.split(/[\s\n]/); // Split by space or newline
+        const lastWord = words[words.length - 2]; // Word before the space/enter just pressed
+
+        if (!lastWord || /[\u0D00-\u0D7F]/.test(lastWord)) return; // Skip if already Malayalam
+
+        const results = await fetchTransliteration(lastWord);
+        if (results.length > 0) {
+            const bestMatch = results[0];
+            const start = textBeforeCursor.lastIndexOf(lastWord);
+            const newText = text.substring(0, start) + bestMatch + text.substring(cursorPos - 1);
             
-            if (!lastWord || lastWord.length < 2 || !/^[a-zA-Z0-9]+$/.test(lastWord)) {
-                wordSuggestions.classList.remove('show');
-                return;
-            }
+            editor.value = newText;
+            const newPos = start + bestMatch.length + 1;
+            editor.setSelectionRange(newPos, newPos);
             
-            try {
-                const params = new URLSearchParams({
-                    text: lastWord,
-                    itc: "ml-t-i0-und",
-                    num: 5,
-                    cp: 0,
-                    cs: 1,
-                    ie: "utf-8",
-                    oe: "utf-8"
-                });
-                
-                const response = await fetch("https://inputtools.google.com/request", {
-                    method: "POST",
-                    body: params,
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    }
-                });
-                
-                const data = await response.json();
-                
-                if (data[0] === "SUCCESS" && data[1] && data[1][0] && data[1][0][1]) {
-                    const suggestions = data[1][0][1].slice(0, 5);
-                    displaySuggestions(suggestions);
-                } else {
-                    wordSuggestions.classList.remove('show');
-                }
-            } catch (error) {
-                console.error("Error fetching suggestions:", error);
-                wordSuggestions.classList.remove('show');
-            }
+            // Trigger auto-save manually since we changed value via script
+            editor.dispatchEvent(new Event('input'));
         }
-        
-        // Display Suggestions
-        function displaySuggestions(suggestions) {
-            wordSuggestions.innerHTML = suggestions.map((suggestion, index) => `
-                <div class="word-suggestion-item" onclick="applySuggestion('${suggestion.replace(/'/g, "\\'")}')">
-                    <span>${suggestion}</span>
-                    <span class="suggestion-label">${index === 0 ? 'BEST MATCH' : ''}</span>
-                </div>
-            `).join('');
-            wordSuggestions.classList.add('show');
+    }
+
+    // Live Suggestions
+    editor.addEventListener('input', async (e) => {
+        const text = editor.value;
+        const cursorPos = editor.selectionStart;
+        const textBefore = text.substring(0, cursorPos);
+        const words = textBefore.split(/[\s\n]/);
+        const wordToProcess = words[words.length - 1];
+
+        if (wordToProcess.length > 1 && !/[\u0D00-\u0D7F]/.test(wordToProcess)) {
+            const suggestions = await fetchTransliteration(wordToProcess);
+            renderSuggestions(suggestions, wordToProcess);
+        } else {
+            suggContainer.innerHTML = '';
         }
+    });
+
+    function renderSuggestions(list, original) {
+        suggContainer.innerHTML = '';
+        if (list.length === 0) return;
         
-        // Apply Suggestion
-        window.applySuggestion = function(suggestion) {
-            const currentWord = getCurrentWord();
-            const text = textarea.value;
-            const newText = text.substring(0, currentWord.start) + suggestion + text.substring(currentWord.end);
-            
-            textarea.value = newText;
-            cursorPos = currentWord.start + suggestion.length;
-            textarea.selectionStart = textarea.selectionEnd = cursorPos;
-            
-            updateStats();
-            wordSuggestions.classList.remove('show');
-            
-            // Auto-save
-            if (fileManager.currentFileId) {
-                fileManager.updateFile(fileManager.currentFileId, textarea.value);
-                updateLastSaved();
-            }
-        };
-        
-        // Transliterate on Space/Enter
-        textarea.addEventListener("keyup", async (event) => {
-            updateStats();
-            cursorPos = textarea.selectionStart;
-            
-            showWordSuggestions();
-            
-            if (event.code === "Space" || event.code === "Enter") {
-                const currentWord = getCurrentWord();
-                
-                if (currentWord.word && /^[a-zA-Z0-9]+$/.test(currentWord.word)) {
-                    try {
-                        const params = new URLSearchParams({
-                            text: currentWord.word,
-                            itc: "ml-t-i0-und",
-                            num: 1,
-                            cp: 0,
-                            cs: 1,
-                            ie: "utf-8",
-                            oe: "utf-8"
-                        });
-                        
-                        const response = await fetch("https://inputtools.google.com/request", {
-                            method: "POST",
-                            body: params,
-                            headers: {
-                                "Content-Type": "application/x-www-form-urlencoded"
-                            }
-                        });
-                        
-                        const data = await response.json();
-                        
-                        if (data[0] === "SUCCESS" && data[1] && data[1][0] && data[1][0][1]) {
-                            const transliterated = data[1][0][1][0];
-                            const text = textarea.value;
-                            const newText = text.substring(0, currentWord.start) + transliterated + text.substring(currentWord.end);
-                            
-                            textarea.value = newText + (event.code === "Space" ? ' ' : '');
-                            textarea.selectionStart = textarea.selectionEnd = newText.length + (event.code === "Space" ? 1 : 0);
-                            
-                            updateStats();
-                            wordSuggestions.classList.remove('show');
-                            
-                            // Auto-save
-                            if (fileManager.currentFileId) {
-                                fileManager.updateFile(fileManager.currentFileId, textarea.value);
-                                updateLastSaved();
-                            }
-                        }
-                    } catch (error) {
-                        console.error("Error transliterating:", error);
-                    }
-                }
-            }
+        list.forEach(word => {
+            const chip = document.createElement('span');
+            chip.className = 'suggestion-chip';
+            chip.innerText = word;
+            chip.onclick = () => applySuggestion(word, original);
+            suggContainer.appendChild(chip);
         });
-        
-        textarea.addEventListener("input", () => {
-            if (fileManager.currentFileId) {
-                fileManager.updateFile(fileManager.currentFileId, textarea.value);
-            }
-        });
-        
-        textarea.addEventListener("blur", () => {
-            wordSuggestions.classList.remove('show');
-        });
-        
-        // Clear Button
-        clearBtn.addEventListener("click", () => {
-            if (textarea.value.trim()) {
-                if (confirm('Clear all text in this file?')) {
-                    textarea.value = '';
-                    updateStats();
-                    wordSuggestions.classList.remove('show');
-                    if (fileManager.currentFileId) {
-                        fileManager.updateFile(fileManager.currentFileId, '');
-                        updateLastSaved();
-                    }
-                    showStatus('✓ Text cleared', 'success');
-                }
-            }
-        });
-        
-        // Copy Button
-        copyBtn.addEventListener("click", () => {
-            if (textarea.value.length === 0) {
-                showStatus('Nothing to copy!', 'warning');
-                return;
-            }
-            
-            textarea.select();
-            document.execCommand('copy');
-            showStatus('✓ Copied to clipboard!', 'success');
-        });
-        
-        // Save Button
-        saveBtn.addEventListener("click", () => {
-            if (fileManager.currentFileId) {
-                fileManager.updateFile(fileManager.currentFileId, textarea.value);
-                updateLastSaved();
-                showStatus('✓ File saved!', 'success');
-            } else {
-                openNewFileModal();
-            }
-        });
-        
-        // Update Last Saved Time
-        function updateLastSaved() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-            });
-            lastSavedSpan.textContent = timeStr;
+    }
+
+    function applySuggestion(replacement, original) {
+        const text = editor.value;
+        const cursorPos = editor.selectionStart;
+        const start = text.lastIndexOf(original, cursorPos);
+        if (start !== -1) {
+            const newText = text.substring(0, start) + replacement + " " + text.substring(cursorPos);
+            editor.value = newText;
+            editor.focus();
+            const newPos = start + replacement.length + 1;
+            editor.setSelectionRange(newPos, newPos);
+            suggContainer.innerHTML = '';
+            editor.dispatchEvent(new Event('input')); // Trigger save
         }
-        
-        // Render Files List
-        function renderFiles() {
-            if (fileManager.files.length === 0) {
-                filesList.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
-                        <p>No files yet. Create your first file!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            filesList.innerHTML = fileManager.files.map(file => `
-                <div class="file-item ${fileManager.currentFileId === file.id ? 'active' : ''}" onclick="openFile('${file.id}')">
-                    <span class="file-name" title="${file.name}">
-                        <i class="fas fa-file-alt"></i> ${file.name}
-                    </span>
-                    <div class="file-actions">
-                        <button class="file-action-btn" onclick="event.stopPropagation(); openRenameModal('${file.id}', '${file.name.replace(/'/g, "\\'")}')" title="Rename">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="file-action-btn delete" onclick="event.stopPropagation(); deleteFileConfirm('${file.id}', '${file.name.replace(/'/g, "\\'")}')" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+    }
+
+    editor.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' || e.code === 'Enter') {
+            setTimeout(processTransliteration, 10);
         }
+    });
+
+    // --- Toolbar Utilities ---
+    function copyText() {
+        if (!editor.value.trim()) return;
+        editor.select();
+        document.execCommand('copy');
+        showStatus('Copied to clipboard!', 'check-double', 'text-primary');
+        setTimeout(() => showStatus('All changes saved', 'check-circle', 'text-success'), 2000);
+    }
+
+    function downloadTxt() {
+        if (!editor.value.trim()) return;
+        const element = document.createElement('a');
+        const file = new Blob([editor.value], {type: 'text/plain'});
+        element.href = URL.createObjectURL(file);
         
-        // Open File
-        window.openFile = function(id) {
-            const file = fileManager.getFile(id);
-            if (file) {
-                fileManager.currentFileId = id;
-                textarea.value = file.content;
-                currentFileSpan.textContent = file.name;
-                updateStats();
-                wordSuggestions.classList.remove('show');
-                renderFiles();
-                updateLastSaved();
-            }
-        };
+        // Use first few words as filename, or default
+        const note = notes.find(n => n.id === activeNoteId);
+        const filename = (note.content.trim().split('\n')[0].substring(0, 15) || 'manglish_note').replace(/[^a-z0-9]/gi, '_').toLowerCase();
         
-        // New File Modal
-        window.openNewFileModal = function() {
-            newFileNameInput.value = '';
-            document.getElementById('new-file-modal').classList.add('show');
-            setTimeout(() => newFileNameInput.focus(), 100);
-        };
-        
-        window.confirmNewFile = function() {
-            const name = newFileNameInput.value.trim();
-            if (!name) {
-                alert('Please enter a file name');
-                return;
-            }
-            
-            const file = fileManager.createFile(name);
-            fileManager.currentFileId = file.id;
-            textarea.value = '';
-            currentFileSpan.textContent = file.name;
-            updateStats();
-            renderFiles();
-            updateLastSaved();
-            closeModal('new-file-modal');
-            showStatus(`✓ File "${name}" created`, 'success');
-        };
-        
-        // Rename File Modal
-        window.openRenameModal = function(id, name) {
-            renameFileId = id;
-            renameInput.value = name;
-            document.getElementById('rename-modal').classList.add('show');
-            setTimeout(() => renameInput.focus(), 100);
-        };
-        
-        window.confirmRename = function() {
-            const newName = renameInput.value.trim();
-            if (!newName) {
-                alert('Please enter a file name');
-                return;
-            }
-            
-            if (fileManager.renameFile(renameFileId, newName)) {
-                if (fileManager.currentFileId === renameFileId) {
-                    currentFileSpan.textContent = newName;
-                }
-                renderFiles();
-                closeModal('rename-modal');
-                showStatus(`✓ File renamed to "${newName}"`, 'success');
-            }
-        };
-        
-        // Delete File
-        window.deleteFileConfirm = function(id, name) {
-            if (confirm(`Are you sure you want to delete "${name}"?`)) {
-                fileManager.deleteFile(id);
-                
-                if (fileManager.currentFileId === id) {
-                    if (fileManager.files.length > 0) {
-                        openFile(fileManager.files[0].id);
-                    } else {
-                        textarea.value = '';
-                        currentFileSpan.textContent = 'Untitled';
-                        updateStats();
-                    }
-                }
-                
-                renderFiles();
-                showStatus(`✓ File deleted`, 'success');
-            }
-        };
-        
-        // Clear All Files
-        window.clearAllFiles = function() {
-            if (confirm('Are you sure you want to delete ALL files? This cannot be undone.')) {
-                fileManager.clearAll();
-                textarea.value = '';
-                currentFileSpan.textContent = 'Untitled';
-                updateStats();
-                renderFiles();
-                showStatus('✓ All files cleared', 'success');
-            }
-        };
-        
-        // Export All Files
-        window.exportAllFiles = function() {
-            if (fileManager.files.length === 0) {
-                alert('No files to export!');
-                return;
-            }
-            fileManager.exportAll();
-            showStatus('✓ Files exported!', 'success');
-        };
-        
-        // Modal Functions
-        window.closeModal = function(modalId) {
-            document.getElementById(modalId).classList.remove('show');
-        };
-        
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.modal-overlay.show').forEach(modal => {
-                    modal.classList.remove('show');
-                });
-            }
-        });
-        
-        // Close modal on background click
-        document.querySelectorAll('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('show');
-                }
-            });
-        });
-        
-        // Initialize
-        window.addEventListener('load', () => {
-            renderFiles();
-            if (fileManager.currentFileId) {
-                openFile(fileManager.currentFileId);
-            } else {
-                // Create a default file
-                const defaultFile = fileManager.createFile('My First File');
-                fileManager.currentFileId = defaultFile.id;
-                renderFiles();
-                updateLastSaved();
-            }
-            textarea.focus();
-        });
-    </script>
+        element.download = `${filename}.txt`;
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+
+    // Start App
+    init();
+
+</script>
+
 </body>
 </html>
